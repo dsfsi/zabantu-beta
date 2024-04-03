@@ -27,16 +27,16 @@ stages:
       desc: Train Tshivenda tokenizers
       cmd: >-
         /bin/bash scripts/train_sp_tokenizer.sh 
-          --input-texts-path ${paths.train_data}/bantu.ven.txt 
-          --sampled-texts-path data/temp/${item.name}/0 
-          --seed ${seed}
-          --alpha ${tokenization.alpha}
-          --tokenizer-model-type ${item.model_type} 
-          --vocab-size ${item.vocab_size}
-          --tokenizer-output-dir ${paths.tokenizer_root}/${item.name}
+        --input-texts-path ${paths.train_data}/bantu.ven.txt 
+        --sampled-texts-path data/temp/${item.name}/0/ 
+        --seed ${global.seed}
+        --alpha ${tokenization.alpha}
+        --tokenizer-model-type ${item.model_type} 
+        --vocab-size ${item.vocab_size}
+        --tokenizer-output-dir ${paths.tokenizer_root}/${item.name}
 
       params:
-        - seed
+        - global.seed
         - tokenization.alpha
         - paths.train_data
         - paths.tokenizer_root
@@ -46,7 +46,8 @@ stages:
         - ${paths.train_data}/bantu.ven.txt
 
       outs:
-        - ${paths.tokenizer_root}/${item.name}
+        - ${paths.tokenizer_root}/${item.name}:
+            cache: false
 
 
   train_tshivenda_xlmr_base:
@@ -74,4 +75,6 @@ stages:
       - configs/tshivenda-xlmr-base.yml
 
     outs:
-      - ${paths.experiments_root}/${name}
+      - ${paths.experiments_root}/${name}:
+          cache: false   # We will only activate this when I feel we need it, I havent seen a need for it yet.
+    

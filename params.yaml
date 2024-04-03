@@ -1,4 +1,5 @@
-seed: 47
+global:
+  seed: 47
 
 tokenization:
   alpha: 0.5

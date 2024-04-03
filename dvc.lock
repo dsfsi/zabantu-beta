@@ -2,3 +2,78 @@ schema: '2.0'
 stages:
   debug:
     cmd: echo "Masked Language Modeling pipeline is working"
+  train_tokenizers_ven@0:
+    cmd: /bin/bash scripts/train_sp_tokenizer.sh  --input-texts-path data/interim/train/bantu.ven.txt  --sampled-texts-path
+      data/temp/tshivenda-xlmr-30k/0/  --seed 47 --alpha 0.5 --tokenizer-model-type
+      unigram  --vocab-size 30000 --tokenizer-output-dir data/tokenizers/tshivenda-xlmr-30k
+    deps:
+    - path: data/interim/train/bantu.ven.txt
+      hash: md5
+      md5: 464acc68763232527d9fc739eab1bae3
+      size: 11400638
+    - path: scripts/train_sp_tokenizer.sh
+      hash: md5
+      md5: 6fcd0030bb4e94e0530887499f973359
+      size: 4340
+    params:
+      params.yaml:
+        global.seed: 47
+        paths.tokenizer_root: data/tokenizers
+        paths.train_data: data/interim/train
+        tokenization.alpha: 0.5
+    outs:
+    - path: data/tokenizers/tshivenda-xlmr-30k
+      hash: md5
+      md5: 925bb1963c2d0417ba4d3428e102cf6e.dir
+      size: 1281740
+      nfiles: 2
+  train_tokenizers_ven@1:
+    cmd: /bin/bash scripts/train_sp_tokenizer.sh  --input-texts-path data/interim/train/bantu.ven.txt  --sampled-texts-path
+      data/temp/tshivenda-xlmr-bpe-30k/0/  --seed 47 --alpha 0.5 --tokenizer-model-type
+      bpe  --vocab-size 30000 --tokenizer-output-dir data/tokenizers/tshivenda-xlmr-bpe-30k
+    deps:
+    - path: data/interim/train/bantu.ven.txt
+      hash: md5
+      md5: 464acc68763232527d9fc739eab1bae3
+      size: 11400638
+    - path: scripts/train_sp_tokenizer.sh
+      hash: md5
+      md5: 6fcd0030bb4e94e0530887499f973359
+      size: 4340
+    params:
+      params.yaml:
+        global.seed: 47
+        paths.tokenizer_root: data/tokenizers
+        paths.train_data: data/interim/train
+        tokenization.alpha: 0.5
+    outs:
+    - path: data/tokenizers/tshivenda-xlmr-bpe-30k
+      hash: md5
+      md5: 974f843034126a96e469c95a3bc162e9.dir
+      size: 1237388
+      nfiles: 2
+  train_tokenizers_ven@2:
+    cmd: /bin/bash scripts/train_sp_tokenizer.sh  --input-texts-path data/interim/train/bantu.ven.txt  --sampled-texts-path
+      data/temp/tshivenda-xlmr-bpe-50k/0/  --seed 47 --alpha 0.5 --tokenizer-model-type
+      bpe  --vocab-size 50000 --tokenizer-output-dir data/tokenizers/tshivenda-xlmr-bpe-50k
+    deps:
+    - path: data/interim/train/bantu.ven.txt
+      hash: md5
+      md5: 464acc68763232527d9fc739eab1bae3
+      size: 11400638
+    - path: scripts/train_sp_tokenizer.sh
+      hash: md5
+      md5: 6fcd0030bb4e94e0530887499f973359
+      size: 4340
+    params:
+      params.yaml:
+        global.seed: 47
+        paths.tokenizer_root: data/tokenizers
+        paths.train_data: data/interim/train
+        tokenization.alpha: 0.5
+    outs:
+    - path: data/tokenizers/tshivenda-xlmr-bpe-50k
+      hash: md5
+      md5: 35e196efb76ee4ae68563d28240fd630.dir
+      size: 1908730
+      nfiles: 2
