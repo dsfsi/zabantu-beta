@@ -119,7 +119,6 @@ if [ $? -eq 0 ]; then
   echo "Key synchronization completed successfully."
   add_secret_load_script_to_remote_bashrc
   setup_google_credentials
-  copy_env_file_to_remote_server
 else
   echo "Error: Key synchronization failed. See logs for details" >&2
   exit 1
