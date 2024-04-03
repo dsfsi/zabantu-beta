@@ -1,0 +1,40 @@
+[tool.poetry]
+name = "zabantu_beta"
+#package-mode = false  # Not using any shared package for now
+version = "0.1.0"
+repository = "https://github.com/ndamulelonemakh/zabantu-beta.git"
+description = "This repository provides a template for training a polyglot(i.e. multilingual) Masked Language Model (MLM) in Python."
+authors = ["Ndamulelo Nemakhavhani <info@ndamulelo.co.za>"]
+license = "BSD-3"
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.11 < 4.0"
+click = "^8.1.7"
+python-dotenv = "^1.0.1"
+pandas = "^2.2.0"
+numpy = "^1.26.3"
+scikit-learn = "^1.4.0"
+dvc = "^3.49.0"
+transformers = "^4.39.2"
+huggingface-hub = "^0.22.2"
+sentencepiece = "^0.2.0"
+tokenizers = "^0.15.2"
+datasets = "^2.18.0"
+evaluate = "^0.4.1"
+seqeval = "^1.2.2"
+nltk = "^3.8.1"
+comet-ml = "^3.39.2"
+protobuf = "^5.26.1"
+dvc-gdrive = "^3.0.1"
+
+[tool.poetry.group.dev.dependencies]
+flake8 = "^7.0.0"
+sphinx = "^7.2.6"
+coverage = "^7.4.1"
+pytest = "^8.0.0"
+jupyterlab = "^4.0.12"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"

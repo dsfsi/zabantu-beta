@@ -1,0 +1,4 @@
+schema: '2.0'
+stages:
+  debug:
+    cmd: echo "Masked Language Modeling pipeline is working"

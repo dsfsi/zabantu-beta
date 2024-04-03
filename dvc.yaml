@@ -1,0 +1,77 @@
+vars:  # Usage examples: https://dvc.org/doc/user-guide/project-structure/dvcyaml-files#variables
+  - desc: 'Zabantu Masked Language Modeling pipelines'
+  - root_dir: '/home/ndamulelo/projects/mit-807-2022-ndamulelo'
+
+stages:
+  debug:
+    desc: Test if the pipeline is working
+    cmd: echo "Masked Language Modeling pipeline is working"
+
+  train_tokenizers_ven:
+    foreach:
+      - model_type: unigram
+        vocab_size: 30000
+        vocab_size_code: 30k
+        name: tshivenda-xlmr-30k
+        # We currently dont have enough data to train a 50k and 70k unigram tokenizers..
+
+      - model_type: bpe
+        vocab_size: 30000
+        vocab_size_code: 30k
+        name: tshivenda-xlmr-bpe-30k
+      - model_type: bpe
+        vocab_size: 50000
+        vocab_size_code: 50k
+        name: tshivenda-xlmr-bpe-50k
+    do:
+      desc: Train Tshivenda tokenizers
+      cmd: >-
+        /bin/bash scripts/train_sp_tokenizer.sh 
+          --input-texts-path ${paths.train_data}/bantu.ven.txt 
+          --sampled-texts-path data/temp/${item.name}/0 
+          --seed ${seed}
+          --alpha ${tokenization.alpha}
+          --tokenizer-model-type ${item.model_type} 
+          --vocab-size ${item.vocab_size}
+          --tokenizer-output-dir ${paths.tokenizer_root}/${item.name}
+
+      params:
+        - seed
+        - tokenization.alpha
+        - paths.train_data
+        - paths.tokenizer_root
+
+      deps:
+        - scripts/train_sp_tokenizer.sh
+        - ${paths.train_data}/bantu.ven.txt
+
+      outs:
+        - ${paths.tokenizer_root}/${item.name}
+
+
+  train_tshivenda_xlmr_base:
+    desc: Train Tshivenda language model
+    vars:
+      - lang: ven
+      - name: tshivenda-xlmr-base
+      - config: configs/tshivenda-xlmr-base.yml
+
+    cmd: >-
+      /bin/bash scripts/train_masked_xlm.sh 
+        --config ${config}
+        --training_data ${paths.train_data}
+        --experiment_name ${name}
+        --tokenizer_path ${paths.tokenizer_root}/${masked_models.tshivenda.tokenizer}
+        --epochs ${masked_models.tshivenda.epochs}
+
+    params:
+      - masked_models.tshivenda.epochs
+
+    deps:
+      - ${paths.train_data}/bantu.ven.txt
+      - ${paths.tokenizer_root}/${masked_models.tshivenda.tokenizer}
+      - scripts/train_masked_xlm.sh
+      - configs/tshivenda-xlmr-base.yml
+
+    outs:
+      - ${paths.experiments_root}/${name}

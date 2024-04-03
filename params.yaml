@@ -1,0 +1,18 @@
+seed: 47
+
+tokenization:
+  alpha: 0.5
+  max_depth: 7
+
+masked_models:
+  tshivenda:
+    tokenizer: 'tshivenda-xlmr-bpe-30k'
+    epochs: 20
+
+paths:
+  experiments_root: 'data/models'
+  pretrain_root: 'data/models/pretrained'
+  finetune_root: 'data/models/finetuned'
+  tokenizer_root: 'data/tokenizers'
+  scripts_root: 'scripts'
+  train_data: 'data/interim/train'

@@ -1,0 +1,17 @@
+name: xlm
+channels:
+  - conda-forge
+  - pytorch
+  - nvidia
+  - defaults
+dependencies:
+  - python=3.11
+  - pip
+  - jupyter
+  - jupyterlab
+  - numpy
+  - pytorch
+  - pytorch-cuda=12.1
+  - pip:
+    - click
+    - python-dotenv
