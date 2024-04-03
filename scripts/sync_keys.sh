@@ -42,6 +42,7 @@ done
 # set defaults
 port=${port:-22}
 env_file=${env_file:-.env}
+project_name="projects/zabantu-beta"
 
 # Check if required arguments are provided
 if [ -z "$server_ip" ] || [ -z "$username" ]; then
@@ -50,8 +51,11 @@ if [ -z "$server_ip" ] || [ -z "$username" ]; then
 fi
 
 if [ ! -f "$env_file" ]; then
-  echo "Error: .env file '$env_file' not found." >&2
+  echo "Error: .env file '$env_file' not found. Nothing to sync" >&2
   exit 1
+else
+  echo "Using .env file: $env_file"
+  . "$env_file"
 fi
 
 echo "Synchronizing keys to remote server..."
@@ -82,9 +86,40 @@ add_secret_load_script_to_remote_bashrc() {
 }
 
 
+setup_google_credentials() {
+  if [ -n "$GOOGLE_APPLICATION_CREDENTIALS" ]; then
+    if [ -f "$GOOGLE_APPLICATION_CREDENTIALS" ]; then
+      echo "Copying GOOGLE_APPLICATION_CREDENTIALS to remote server..."
+      local target_dir="/home/${username}/.myvault"
+
+      ssh -p "$port" "${username}@${server_ip}" "mkdir -p $target_dir"
+      scp -P "$port" "$GOOGLE_APPLICATION_CREDENTIALS" "${username}@${server_ip}:${target_dir}/"
+      echo "GOOGLE_APPLICATION_CREDENTIALS copied to remote server."
+
+    else
+      echo "Error: GOOGLE_APPLICATION_CREDENTIALS file not found." >&2
+    fi
+  fi
+}
+
+
+copy_env_file_to_remote_server() {
+  local project_dir="/home/${username}/${project_name}"
+  local target_file="${project_dir}/.env"
+
+  if ssh -p "$port" "${username}@${server_ip}" "[ -d $project_dir ]"; then
+    echo "Copying .env file to remote server..."
+    scp -P "$port" "$env_file" "${username}@${server_ip}:${target_file}"
+    echo ".env file copied to remote server."
+  fi
+}
+
+
 if [ $? -eq 0 ]; then
   echo "Key synchronization completed successfully."
   add_secret_load_script_to_remote_bashrc
+  setup_google_credentials
+  copy_env_file_to_remote_server
 else
   echo "Error: Key synchronization failed. See logs for details" >&2
   exit 1
