@@ -59,11 +59,11 @@ stages:
 
     cmd: >-
       /bin/bash scripts/train_masked_xlm.sh 
-        --config ${config}
-        --training_data ${paths.train_data}
-        --experiment_name ${name}
-        --tokenizer_path ${paths.tokenizer_root}/${masked_models.tshivenda.tokenizer}
-        --epochs ${masked_models.tshivenda.epochs}
+      --config ${config}
+      --training_data ${paths.train_data}
+      --experiment_name ${name}
+      --tokenizer_path ${paths.tokenizer_root}/${masked_models.tshivenda.tokenizer}
+      --epochs ${masked_models.tshivenda.epochs}
 
     params:
       - masked_models.tshivenda.epochs

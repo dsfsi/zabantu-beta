@@ -22,7 +22,7 @@ common:
 # XLMRobertaConfig - used when initialising model to train from scratch
 # Ref: https://huggingface.co/docs/transformers/model_doc/xlm-roberta#transformers.XLMRobertaConfig
 model:
-  tokenizer_path: data/tokenizers/tshivenda-xlmr-base
+  tokenizer_path: data/tokenizers/tshivenda-xlmr-30k
   layer_norm_eps: 1.0e-05
   output_past: True
   type_vocab_size: 1
@@ -35,7 +35,7 @@ model:
 # Arguments to be passed to hugging face TrainingArguments instance
 # Ref: https://huggingface.co/docs/transformers/v4.39.2/en/main_classes/trainer#transformers.TrainingArguments
 training:
-  output_dir: data/models/tshivenda-xlmr-base # Can be overriden by command line argument
+  output_dir: data/models/tshivenda-xlmr-30k # Can be overriden by command line argument
   gradient_accumulation_steps: 8
   ignore_data_skip: False
   overwrite_output_dir: False
