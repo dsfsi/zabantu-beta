@@ -202,6 +202,18 @@ Project Structure
 * We welcome contributions to this project. Please refer to the [Contributing Guide](./docs/CONTRIBUTING.md) for more details on how to contribute.
 
 
+# Citation
+
+```tex
+@misc{nemakhavhani-2024-ZabantuBeta,
+  title   = {Training Lite Cross-Lingual Language Models for South African Bantu Languages - Preview},
+  author  = {Ndamulelo Nemakhavhani},
+  year    = {2024},
+  url= {https://github.com/ndamulelonemakh/zabantu-beta},
+  keywords = {NLP, BERT, Low-resource, XLM-R, Bantu}
+}
+```
+
 --------
 
 # Troubleshooting
