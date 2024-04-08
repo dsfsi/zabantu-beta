@@ -76,7 +76,7 @@ stages:
       - ${paths.experiments_root}/${name}:
           cache: false # We will only activate this when I feel we need it, I havent seen a need for it yet.
 
-  train_tokenizers_tsonga:
+  train_tokenizers_tso:
     foreach:
       - model_type: unigram
         vocab_size: 30000
@@ -118,7 +118,7 @@ stages:
         - ${paths.tokenizer_root}/${item.name}:
             cache: false
 
-  train_tsonga_xlmr_base:
+  train_xitsonga_xlmr_base:
     desc: Train XiTsonga language model
     vars:
       - lang: tso
@@ -130,15 +130,15 @@ stages:
       --config ${config}
       --training_data ${paths.train_data}
       --experiment_name ${name}
-      --tokenizer_path ${paths.tokenizer_root}/${masked_models.tsonga.tokenizer}
-      --epochs ${masked_models.tsonga.epochs}
+      --tokenizer_path ${paths.tokenizer_root}/${masked_models.xitsonga.tokenizer}
+      --epochs ${masked_models.xitsonga.epochs}
 
     params:
-      - masked_models.tsonga.epochs
+      - masked_models.xitsonga.epochs
 
     deps:
       - ${paths.train_data}/bantu.tso.txt
-      - ${paths.tokenizer_root}/${masked_models.tsonga.tokenizer}
+      - ${paths.tokenizer_root}/${masked_models.xitsonga.tokenizer}
       - scripts/train_masked_xlm.sh
       - configs/xitsonga-xlmr-base.yml
 
@@ -146,7 +146,7 @@ stages:
       - ${paths.experiments_root}/${name}:
           cache: false
 
-  train_tokenizers_sot:
+  train_tokenizers_sotho:
     foreach:
       - model_type: unigram
         vocab_size: 30000
