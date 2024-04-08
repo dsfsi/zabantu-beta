@@ -110,6 +110,16 @@ def main(input_data_path: str, output_path: str, alpha: float = 0.3, seed: int =
                 with open(file, "r", encoding="utf-8") as infile:
                     corpus_content_by_language[lang] = infile.readlines()
                     corpus_size_by_language[lang] = len(corpus_content_by_language[lang])
+    
+    elif "," in input_data_path and all([Path(file).is_file() for file in input_data_path.split(",")]):
+        logger.info(f"Loading training files from comma separated list of files={input_data_path}")
+        for file in input_data_path.split(","):
+            if Path(file).is_file():
+                lang = Path(file).name.split(".")[-1]
+                with open(file, "r", encoding="utf-8") as infile:
+                    corpus_content_by_language[lang] = infile.readlines()
+                    corpus_size_by_language[lang] = len(corpus_content_by_language[lang])                
+    
     else:
         raise ValueError(f"Invalid {input_data_path}. Please provide a valid file or directory path.")
 

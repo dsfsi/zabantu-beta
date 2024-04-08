@@ -1,6 +1,6 @@
-vars:  # Usage examples: https://dvc.org/doc/user-guide/project-structure/dvcyaml-files#variables
-  - desc: 'Zabantu Masked Language Modeling pipelines'
-  - root_dir: '/home/ndamulelo/projects/mit-807-2022-ndamulelo'
+vars: # Usage examples: https://dvc.org/doc/user-guide/project-structure/dvcyaml-files#variables
+  - desc: "Zabantu Masked Language Modeling pipelines"
+  - root_dir: "/home/ndamulelo/projects/mit-807-2022-ndamulelo"
 
 stages:
   debug:
@@ -49,7 +49,6 @@ stages:
         - ${paths.tokenizer_root}/${item.name}:
             cache: false
 
-
   train_tshivenda_xlmr_base:
     desc: Train Tshivenda language model
     vars:
@@ -76,5 +75,237 @@ stages:
 
     outs:
       - ${paths.experiments_root}/${name}:
-          cache: false   # We will only activate this when I feel we need it, I havent seen a need for it yet.
-    
+          cache: false # We will only activate this when I feel we need it, I havent seen a need for it yet.
+
+  train_tokenizers_tsonga:
+    foreach:
+      - model_type: unigram
+        vocab_size: 30000
+        vocab_size_code: 30k
+        name: xitsonga-xlmr-30k
+        # We currently dont have enough data to train a 50k and 70k unigram tokenizers..
+
+      - model_type: bpe
+        vocab_size: 30000
+        vocab_size_code: 30k
+        name: xitsonga-xlmr-bpe-30k
+      - model_type: bpe
+        vocab_size: 50000
+        vocab_size_code: 50k
+        name: xitsonga-xlmr-bpe-50k
+    do:
+      desc: Train XiTsonga tokenizers
+      cmd: >-
+        /bin/bash scripts/train_sp_tokenizer.sh 
+        --input-texts-path ${paths.train_data}/bantu.tso.txt 
+        --sampled-texts-path data/temp/${item.name}/0/ 
+        --seed ${global.seed}
+        --alpha ${tokenization.alpha}
+        --tokenizer-model-type ${item.model_type} 
+        --vocab-size ${item.vocab_size}
+        --tokenizer-output-dir ${paths.tokenizer_root}/${item.name}
+
+      params:
+        - global.seed
+        - tokenization.alpha
+        - paths.train_data
+        - paths.tokenizer_root
+
+      deps:
+        - scripts/train_sp_tokenizer.sh
+        - ${paths.train_data}/bantu.tso.txt
+
+      outs:
+        - ${paths.tokenizer_root}/${item.name}:
+            cache: false
+
+  train_tsonga_xlmr_base:
+    desc: Train XiTsonga language model
+    vars:
+      - lang: tso
+      - name: tsonga-xlmr-base
+      - config: configs/tsonga-xlmr-base.yml
+
+    cmd: >-
+      /bin/bash scripts/train_masked_xlm.sh 
+      --config ${config}
+      --training_data ${paths.train_data}
+      --experiment_name ${name}
+      --tokenizer_path ${paths.tokenizer_root}/${masked_models.tsonga.tokenizer}
+      --epochs ${masked_models.tsonga.epochs}
+
+    params:
+      - masked_models.tsonga.epochs
+
+    deps:
+      - ${paths.train_data}/bantu.tso.txt
+      - ${paths.tokenizer_root}/${masked_models.tsonga.tokenizer}
+      - scripts/train_masked_xlm.sh
+      - configs/xitsonga-xlmr-base.yml
+
+    outs:
+      - ${paths.experiments_root}/${name}:
+          cache: false
+
+  train_tokenizers_sot:
+    foreach:
+      - model_type: unigram
+        vocab_size: 30000
+        vocab_size_code: 30k
+        name: sotho-xlmr-30k
+      - model_type: unigram
+        vocab_size: 50000
+        vocab_size_code: 50k
+        name: sotho-xlmr-50k
+      - model_type: unigram
+        vocab_size: 70000
+        vocab_size_code: 70k
+        name: sotho-xlmr-70k
+      - model_type: unigram
+        vocab_size: 150000
+        vocab_size_code: 150k
+        name: sotho-xlmr-150k
+
+      - model_type: bpe
+        vocab_size: 30000
+        vocab_size_code: 30k
+        name: sotho-xlmr-bpe-30k
+      - model_type: bpe
+        vocab_size: 50000
+        vocab_size_code: 50k
+        name: sotho-xlmr-bpe-50k
+      - model_type: bpe
+        vocab_size: 70000
+        vocab_size_code: 70k
+        name: sotho-xlmr-bpe-70k
+      - model_type: bpe
+        vocab_size: 150000
+        vocab_size_code: 150k
+        name: sotho-xlmr-bpe-150k
+      - model_type: bpe
+        vocab_size: 250000
+        vocab_size_code: 250k
+        name: sotho-xlmr-bpe-250k
+    do:
+      desc: Train Southern Sotho tokenizers
+      cmd: >-
+        /bin/bash scripts/train_sp_tokenizer.sh 
+        --input-texts-path "${paths.train_data}/bantu.tsn.txt,${paths.train_data}/bantu.sot.txt,${paths.train_data}/bantu.nso.txt"
+        --sampled-texts-path data/temp/${item.name}/0/ 
+        --seed ${global.seed}
+        --alpha ${tokenization.alpha}
+        --tokenizer-model-type ${item.model_type} 
+        --vocab-size ${item.vocab_size}
+        --tokenizer-output-dir ${paths.tokenizer_root}/${item.name}
+
+      params:
+        - global.seed
+        - tokenization.alpha
+        - paths.train_data
+        - paths.tokenizer_root
+
+      deps:
+        - scripts/train_sp_tokenizer.sh
+        - ${paths.train_data}/bantu.tsn.txt
+        - ${paths.train_data}/bantu.sot.txt
+        - ${paths.train_data}/bantu.nso.txt
+
+      outs:
+        - ${paths.tokenizer_root}/${item.name}:
+            cache: false
+
+  train_sotho_xlmr_base:
+    desc: Train a multilingual model for all languages belonging to the Sotho Family
+    vars:
+      - lang: sot
+      - name: sotho-xlmr-base
+      - config: configs/sotho-xlmr-base.yml
+
+    cmd: >-
+      /bin/bash scripts/train_masked_xlm.sh 
+      --config ${config}
+      --training_data ${paths.train_data}
+      --experiment_name ${name}
+      --tokenizer_path ${paths.tokenizer_root}/${masked_models.sotho.tokenizer}
+      --epochs ${masked_models.sotho.epochs}
+
+    params:
+      - masked_models.sotho.epochs
+
+    deps:
+      - ${paths.train_data}/bantu.tsn.txt
+      - ${paths.train_data}/bantu.sot.txt
+      - ${paths.train_data}/bantu.nso.txt
+      - ${paths.tokenizer_root}/${masked_models.sotho.tokenizer}
+      - scripts/train_masked_xlm.sh
+      - ${config}
+
+    outs:
+      - ${paths.experiments_root}/${name}:
+          cache: false
+
+  train_tokenizers_nguni:
+    foreach:
+      - model_type: unigram
+        vocab_size: 30000
+        vocab_size_code: 30k
+        name: nguni-xlmr-30k
+      - model_type: unigram
+        vocab_size: 50000
+        vocab_size_code: 50k
+        name: nguni-xlmr-50k
+      - model_type: unigram
+        vocab_size: 70000
+        vocab_size_code: 70k
+        name: nguni-xlmr-70k
+      - model_type: unigram
+        vocab_size: 150000
+        vocab_size_code: 150k
+        name: nguni-xlmr-150
+      - model_type: bpe
+        vocab_size: 30000
+        vocab_size_code: 30k
+        name: nguni-xlmr-bpe-30k
+      - model_type: bpe
+        vocab_size: 50000
+        vocab_size_code: 50k
+        name: nguni-xlmr-bpe-50k
+      - model_type: bpe
+        vocab_size: 70000
+        vocab_size_code: 70k
+        name: nguni-xlmr-bpe-70k
+      - model_type: bpe
+        vocab_size: 150000
+        vocab_size_code: 150k
+        name: nguni-xlmr-bpe-150k
+      - model_type: bpe
+        vocab_size: 250000
+        vocab_size_code: 250k
+        name: nguni-xlmr-bpe-250k
+    do:
+      desc: Train Nguni tokenizers
+      cmd: >-
+        /bin/bash scripts/train_sp_tokenizer.sh 
+        --input-texts-path "${paths.train_data}/bantu.zul.txt,${paths.train_data}/bantu.xho.txt,${paths.train_data}/bantu.nbl.txt,${paths.train_data}/bantu.ssw.txt"
+        --sampled-texts-path data/temp/${item.name}/0/ 
+        --seed ${global.seed}
+        --alpha ${tokenization.alpha}
+        --tokenizer-model-type ${item.model_type} 
+        --vocab-size ${item.vocab_size}
+        --tokenizer-output-dir ${paths.tokenizer_root}/${item.name}
+
+      params:
+        - global.seed
+        - tokenization.alpha
+        - paths.train_data
+
+      deps:
+        - scripts/train_sp_tokenizer.sh
+        - ${paths.train_data}/bantu.zul.txt
+        - ${paths.train_data}/bantu.xho.txt
+        - ${paths.train_data}/bantu.nbl.txt
+        - ${paths.train_data}/bantu.ssw.txt
+
+      outs:
+        - ${paths.tokenizer_root}/${item.name}:
+            cache: false

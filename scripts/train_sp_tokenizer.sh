@@ -72,7 +72,7 @@ while [[ $# -gt 0 ]]; do
       echo "Usage: $0 --input-texts-path <path> --sampled-texts-path <path> --seed <seed> --tokenizer-model-type <type> --vocab-size <size> --tokenizer-output-dir <path> --alpha <alpha>"
       echo
       echo "Options:"
-      echo "  --input-texts-path       Path to the input texts for sentencepiece training. Can either be a single .txt file or a directory containing .txt files."
+      echo "  --input-texts-path       Path to the input texts for sentencepiece training. Can either be a single .txt file or a directory containing .txt files. A comma-separated list of paths is also supported."
       echo "  --sampled-texts-path     Path to temporarily store the sampled texts for sentencepiece training"
       echo "  --seed                   Random seed for sampling"
       echo "  --tokenizer-model-type   Type of tokenizer model (BPE or Unigram)"
@@ -116,3 +116,7 @@ python "$TOKENIZER_LIB_PATH/train_sp_tokenizer.py" \
   --eval_text "Ndi matsheloni avhudi! Vho tanganedzwa fhano Tshakhuma."
 
 echo "$(date) - Finished running sentencepiece tokenization pipeline"
+
+echo "Cleaning up temporary files.."
+rm -rv "$sampledTextsPath/*.txt"
+rmdir "$sampledTextsPath"
