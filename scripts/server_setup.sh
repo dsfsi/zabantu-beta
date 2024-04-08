@@ -29,7 +29,6 @@ else
   echo 'export PATH="$HOME/miniconda3/bin:$PATH"' >> ~/.bashrc
   . ~/.bashrc
   conda --version
-  conda init bash
 fi
 
 # Install Poetry
@@ -62,8 +61,7 @@ if [ -f "environment.yml" ]; then
   name=$(head -n 1 environment.yml | cut -d' ' -f2)
   echo "Creating and activating conda environment name=$name..."
   conda env create -f environment.yml --json
-  conda init bash
-  . ~/.bashrc
+  eval "$(conda shell.bash hook)"
   conda activate $name
 else
   echo "environment.yml not found. Skipping conda environment creation."
