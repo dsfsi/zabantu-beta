@@ -9,6 +9,18 @@ masked_models:
   tshivenda:
     tokenizer: 'tshivenda-xlmr-bpe-30k'
     epochs: 20
+  xitsonga:
+    tokenizer: 'xitsonga-xlmr-bpe-30k'
+    epochs: 20
+  sotho:
+    tokenizer: 'sotho-xlmr-bpe-30k'
+    epochs: 20
+  nguni:
+    tokenizer: 'nguni-xlmr-bpe-30k'
+    epochs: 20
+  zabantu:
+    tokenizer: 'zabantu-xlmr-bpe-30k'
+    epochs: 20
 
 paths:
   experiments_root: 'data/models'

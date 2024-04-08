@@ -1,6 +1,5 @@
 vars: # Usage examples: https://dvc.org/doc/user-guide/project-structure/dvcyaml-files#variables
-  - desc: "Zabantu Masked Language Modeling pipelines"
-  - root_dir: "/home/ndamulelo/projects/mit-807-2022-ndamulelo"
+  - desc: "ZaBantu - Multi-lingual Masked Language Modeling pipelines for Bantu languages"
 
 stages:
   debug:
@@ -309,3 +308,147 @@ stages:
       outs:
         - ${paths.tokenizer_root}/${item.name}:
             cache: false
+
+  train_nguni_xlmr_base:
+    desc: Train a multilingual model for all languages belonging to the Nguni Family
+    vars:
+      - lang: ngu
+      - name: nguni-xlmr-base
+      - config: configs/nguni-xlmr-base.yml
+
+    cmd: >-
+      /bin/bash scripts/train_masked_xlm.sh 
+      --config ${config}
+      --training_data ${paths.train_data}
+      --experiment_name ${name}
+      --tokenizer_path ${paths.tokenizer_root}/${masked_models.nguni.tokenizer}
+      --epochs ${masked_models.nguni.epochs}
+
+    params:
+      - masked_models.nguni.epochs
+
+    deps:
+      - ${paths.train_data}/bantu.zul.txt
+      - ${paths.train_data}/bantu.xho.txt
+      - ${paths.train_data}/bantu.nbl.txt
+      - ${paths.train_data}/bantu.ssw.txt
+      - ${paths.tokenizer_root}/${masked_models.nguni.tokenizer}
+      - scripts/train_masked_xlm.sh
+      - ${config}
+
+    outs:
+      - ${paths.experiments_root}/${name}:
+          cache: false
+
+  train_tokenizers_zabantu:
+    foreach:
+      - model_type: unigram
+        vocab_size: 30000
+        vocab_size_code: 30k
+        name: zabantu-xlmr-30k
+      - model_type: unigram
+        vocab_size: 50000
+        vocab_size_code: 50k
+        name: zabantu-xlmr-50k
+      - model_type: unigram
+        vocab_size: 70000
+        vocab_size_code: 70k
+        name: zabantu-xlmr-70k
+      - model_type: unigram
+        vocab_size: 150000
+        vocab_size_code: 150k
+        name: zabantu-xlmr-150
+      - model_type: unigram
+        vocab_size: 250000
+        vocab_size_code: 250k
+        name: zabantu-xlmr-250k
+
+      - model_type: bpe
+        vocab_size: 30000
+        vocab_size_code: 30k
+        name: zabantu-xlmr-bpe-30k
+      - model_type: bpe
+        vocab_size: 50000
+        vocab_size_code: 50k
+        name: zabantu-xlmr-bpe-50k
+      - model_type: bpe
+        vocab_size: 70000
+        vocab_size_code: 70k
+        name: zabantu-xlmr-bpe-70k
+      - model_type: bpe
+        vocab_size: 150000
+        vocab_size_code: 150k
+        name: zabantu-xlmr-bpe-150k
+      - model_type: bpe
+        vocab_size: 250000
+        vocab_size_code: 250k
+        name: zabantu-xlmr-bpe-250k
+    do:
+      desc: Train Zabantu tokenizers
+      cmd: >-
+        /bin/bash scripts/train_sp_tokenizer.sh 
+        --input-texts-path "${paths.train_data}"
+        --sampled-texts-path data/temp/${item.name}/0/ 
+        --seed ${global.seed}
+        --alpha ${tokenization.alpha}
+        --tokenizer-model-type ${item.model_type}
+        --vocab-size ${item.vocab_size}
+        --tokenizer-output-dir ${paths.tokenizer_root}/${item.name}
+
+      params:
+        - global.seed
+        - tokenization.alpha
+        - paths.train_data
+        - paths.tokenizer_root
+
+      deps:
+        - scripts/train_sp_tokenizer.sh
+        - ${paths.train_data}/bantu.zul.txt
+        - ${paths.train_data}/bantu.xho.txt
+        - ${paths.train_data}/bantu.nbl.txt
+        - ${paths.train_data}/bantu.ssw.txt
+        - ${paths.train_data}/bantu.tsn.txt
+        - ${paths.train_data}/bantu.sot.txt
+        - ${paths.train_data}/bantu.nso.txt
+        - ${paths.train_data}/bantu.ven.txt
+        - ${paths.train_data}/bantu.sna.txt
+
+      outs:
+        - ${paths.tokenizer_root}/${item.name}:
+            cache: false
+
+  train_zabantu_xlmr_base:
+    desc: Train a multilingual model for all languages belonging to the Bantu family mostly spoken in the Southern regions of Africa
+    vars:
+      - lang: ngu
+      - name: zabantu-xlmr-base
+      - config: configs/zabantu-xlmr-base.yml
+
+    cmd: >-
+      /bin/bash scripts/train_masked_xlm.sh 
+      --config ${config}
+      --training_data ${paths.train_data}
+      --experiment_name ${name}
+      --tokenizer_path ${paths.tokenizer_root}/${masked_models.zabantu.tokenizer}
+      --epochs ${masked_models.zabantu.epochs}
+
+    params:
+      - masked_models.zabantu.epochs
+
+    deps:
+      - ${paths.train_data}/bantu.zul.txt
+      - ${paths.train_data}/bantu.xho.txt
+      - ${paths.train_data}/bantu.nbl.txt
+      - ${paths.train_data}/bantu.ssw.txt
+      - ${paths.train_data}/bantu.tsn.txt
+      - ${paths.train_data}/bantu.sot.txt
+      - ${paths.train_data}/bantu.nso.txt
+      - ${paths.train_data}/bantu.ven.txt
+      - ${paths.train_data}/bantu.sna.txt
+      - ${paths.tokenizer_root}/${masked_models.zabantu.tokenizer}
+      - scripts/train_masked_xlm.sh
+      - ${config}
+
+    outs:
+      - ${paths.experiments_root}/${name}:
+          cache: false
