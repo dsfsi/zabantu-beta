@@ -206,7 +206,7 @@ Project Structure
 ```tex
 @misc{nemakhavhani-2024-ZabantuBeta,
   title   = {Training Lite Cross-Lingual Language Models for South African Bantu Languages - Preview},
-  author  = {Ndamulelo Nemakhavhani},
+  author  = {Ndamulelo Nemakhavhani, Vukosi Marivate, Jocelyn Mazarura},
   year    = {2024},
   url= {https://github.com/ndamulelonemakh/zabantu-beta},
   keywords = {NLP, BERT, Low-resource, XLM-R, Bantu}
